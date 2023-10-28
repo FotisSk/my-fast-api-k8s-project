@@ -4,9 +4,9 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, StrictStr
 from random import randrange
+from . import models, schemas
 import json
 import psycopg2
-from . import models
 from psycopg2.extras import RealDictCursor
 from app.database import SessionLocal, engine, get_db
 from sqlalchemy.orm import Session
@@ -24,17 +24,6 @@ handler = DatabaseHandler()
 conn = handler.get_connection() 
 cursor = conn.cursor()
 print("Database connection was successful")
-
-class Post(BaseModel):
-    """
-    Validator class to ensure data is received in an expected way
-    from our `/createposts` endpoint.
-    """
-    title: str
-    content: str
-    is_published: bool = True # optional field with default value to our schema
-
-
 
 my_posts = [
     {   
@@ -69,6 +58,7 @@ def find_index(id: int):
 async def root():
     return {"message": "Welcome to my API"}
 
+# GET all
 @app.get("/posts")
 async def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts""")
@@ -77,6 +67,7 @@ async def get_posts(db: Session = Depends(get_db)):
     return {"data": posts}  # FASTAPI automatically serializes my_posts into JSON
     # return JSONResponse(content=jsonable_encoder(posts))
 
+# GET one
 @app.get("/posts/{id}")
 async def get_post(id: int, db: Session = Depends(get_db)): #, response: Response):   #___________ id: int means that `id` has to be an integer and it is going to try to convert the `id` to an int every time
     # post = find_post(id)
@@ -91,9 +82,10 @@ async def get_post(id: int, db: Session = Depends(get_db)): #, response: Respons
         )
     return {"data": post}
 
+# CREATE
 @app.post("/posts", status_code=status.HTTP_201_CREATED) # ________ with status_code we are changing the default response
 # async def create_posts(payload: dict = Body(...)):
-async def create_posts(post: Post, db: Session = Depends(get_db)):
+async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # cursor.execute(
     #     """INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *""",
     #     (post.title, post.content, post.published)
@@ -111,6 +103,7 @@ async def create_posts(post: Post, db: Session = Depends(get_db)):
     db.refresh(new_post)    # 
     return {"data": new_post}                           #_________________________________ send the newly created post back to the Front End
 
+# DELETE
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(id: int, db: Session = Depends(get_db)):
     # index = find_index(id)
@@ -130,8 +123,9 @@ async def delete_post(id: int, db: Session = Depends(get_db)):
     return
     # return Response(status_code=status.HTTP_204_NO_CONTENT) # ______ we deleted the post, we should not send any data back fast api throws an arror if we return the id of the post or something more
 
+# UPDATE
 @app.put("/posts/{id}", status_code=status.HTTP_200_OK)
-def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     # index = find_index(id)
     # payload_dict = payload.model_dump()
     # cursor.execute(

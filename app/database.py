@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-HOST = "172.27.249.28"
+HOST = "172.22.210.214"
 DATABASE = os.environ.get("DATABASE")
 DB_USER = os.environ.get("DB_USER")
 PASSWORD = os.environ.get("PASSWORD")
@@ -29,21 +29,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-class DatabaseHandler:
-
-    def __init__(self) -> None:
-        try:
-            self.conn = psycopg2.connect(
-                host=HOST,
-                database=DATABASE,
-                user=DB_USER,
-                password=PASSWORD,
-                cursor_factory=RealDictCursor
-            )
-        except Exception as e:
-            print(f"Connecting to database failed: {e}")
-
-    def get_connection(self):
-        return self.conn

@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
@@ -29,7 +30,8 @@ class PostResponse(PostBase):
     #Tells pydantic model to read the data even if it is not a dict, but an ORM model
     #(or any other arbitrary obj with attributes).
     class Config:
-        orm_mode = True
+        # orm_mode is deprecated -> use from_attributes instead
+        from_attributes = True
 
 
 class UserCreate(BaseModel):
@@ -50,4 +52,23 @@ class UserResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        # orm_mode is deprecated -> use from_attributes instead
+        from_attributes = True
+
+
+# Deprecated: We use OAuth2PasswordRequestForm instead
+# class UserLogin(BaseModel):
+#     """
+#     Validates whether the user give proper login information
+#     """
+#     email: EmailStr
+#     password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    id: Optional[str] = None

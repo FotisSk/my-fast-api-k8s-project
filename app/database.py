@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-HOST = "172.22.210.214"
+HOST = "172.23.161.207"
 DATABASE = os.environ.get("DATABASE")
 DB_USER = os.environ.get("DB_USER")
 PASSWORD = os.environ.get("PASSWORD")

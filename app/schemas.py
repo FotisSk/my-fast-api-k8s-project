@@ -2,6 +2,29 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
+
+class UserCreate(BaseModel):
+    """
+    Validator class to ensure data is received in an expected way
+    from our endpoint in order to create a User.
+    """
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    """
+    Response related class to ensure which User data is returned/ommited.
+    """
+    id: int
+    email: EmailStr
+    created_at: datetime
+
+    class Config:
+        # orm_mode is deprecated -> use from_attributes instead
+        from_attributes = True
+
+
 class PostBase(BaseModel):
     """
     Validator class to ensure data is received in an expected way
@@ -26,31 +49,11 @@ class PostResponse(PostBase):
     """
     id: int
     created_at: datetime
+    owner_id: int
+    owner: UserResponse
 
     #Tells pydantic model to read the data even if it is not a dict, but an ORM model
     #(or any other arbitrary obj with attributes).
-    class Config:
-        # orm_mode is deprecated -> use from_attributes instead
-        from_attributes = True
-
-
-class UserCreate(BaseModel):
-    """
-    Validator class to ensure data is received in an expected way
-    from our endpoint in order to create a User.
-    """
-    email: EmailStr
-    password: str
-
-
-class UserResponse(BaseModel):
-    """
-    Response related class to ensure which User data is returned/ommited.
-    """
-    id: int
-    email: EmailStr
-    created_at: datetime
-
     class Config:
         # orm_mode is deprecated -> use from_attributes instead
         from_attributes = True

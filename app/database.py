@@ -1,14 +1,20 @@
-import psycopg2 
-import os
-from psycopg2.extras import RealDictCursor
+# import psycopg2 
+# import os
+# from psycopg2.extras import RealDictCursor
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from app.config import settings
 
-HOST = "172.23.161.207"
-DATABASE = os.environ.get("DATABASE")
-DB_USER = os.environ.get("DB_USER")
-PASSWORD = os.environ.get("PASSWORD")
+# alternative instead of using pydantic for env vars
+# DATABASE = os.environ.get("DATABASE")
+# DB_USER = os.environ.get("DB_USER")
+# PASSWORD = os.environ.get("PASSWORD")
+
+HOST = settings.host
+DATABASE = settings.database
+DB_USER = settings.db_user
+PASSWORD = settings.password
 
 # format --> SQLALCHEMY_DATABASE_URL = "postgresql://<username>:<password>@<ip-address or hostname>/<database_name>"
 SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{PASSWORD}@{HOST}/{DATABASE}"
